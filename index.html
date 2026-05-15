@@ -3,21 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>StreamGrid · מציג M3U</title>
-
-<!-- PWA / iOS -->
+<title>StreamGrid</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="StreamGrid">
 <meta name="theme-color" content="#07090d">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%2307090d'/%3E%3Ctext x='90' y='125' font-size='100' text-anchor='middle' fill='%23e8a020'%3E⬡%3C/text%3E%3C/svg%3E">
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22StreamGrid%22%2C%22short_name%22%3A%22StreamGrid%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2307090d%22%2C%22theme_color%22%3A%22%2307090d%22%2C%22orientation%22%3A%22landscape%22%7D">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --bg:#07090d;--bg2:#0c0f16;--bg3:#121720;--bg4:#1a2030;
   --border:#1c2535;--border2:#263040;
@@ -25,95 +20,157 @@
   --purple:#7c3aed;--purple-bg:rgba(124,58,237,.15);--purple-text:#a78bfa;
   --text:#c8d4e0;--text2:#7888a0;--text3:#384a5c;--text4:#1e2d3d;
   --green:#22c55e;--red:#ef4444;--blue:#3b82f6;
-  --gap:3px;
+  --gap:3px;--topH:46px;
   --fi:'Barlow Condensed',sans-serif;
   --fm:'Share Tech Mono',monospace;
   --fb:'Barlow',sans-serif;
-  --sb:360px;
-  --cats:105px;
+  --sb:340px;--cats:100px;
 }
 html{height:100%}
 body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--fb);display:flex;flex-direction:column}
 
-#topbar{height:46px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:8px;flex-shrink:0;z-index:100;user-select:none}
-.logo{font-family:var(--fi);font-size:17px;font-weight:700;letter-spacing:3px;color:var(--accent);white-space:nowrap}
-.logo span{color:var(--text4);font-weight:400;font-size:11px;letter-spacing:1px}
-.vd{width:1px;height:22px;background:var(--border);flex-shrink:0}
+/* ══ TOPBAR ══ */
+#topbar{
+  height:var(--topH);background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0;z-index:100;
+  overflow-x:auto;scrollbar-width:none;
+}
+#topbar::-webkit-scrollbar{display:none}
+.logo{font-family:var(--fi);font-size:16px;font-weight:700;letter-spacing:3px;color:var(--accent);white-space:nowrap}
+.logo span{color:var(--text4);font-weight:400;font-size:10px;letter-spacing:1px}
+.vd{width:1px;height:20px;background:var(--border);flex-shrink:0}
 
-.lay-btns{display:flex;gap:3px}
-.lay-btn{width:30px;height:26px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .15s;padding:4px}
-.lay-btn svg{width:15px;height:15px}
-.lay-btn:hover{border-color:var(--accent);color:var(--accent)}
+.lay-btns{display:flex;gap:2px}
+.lay-btn{width:28px;height:26px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .15s;padding:3px;flex-shrink:0}
+.lay-btn svg{width:14px;height:14px}
+.lay-btn:hover,.lay-btn:active{border-color:var(--accent);color:var(--accent)}
 .lay-btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
 
-.tb{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--text);padding:4px 10px;font-family:var(--fi);font-size:13px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.tb:hover{border-color:var(--accent);color:var(--accent)}
+.tb{display:flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--text);padding:4px 9px;font-family:var(--fi);font-size:13px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.tb:hover,.tb:active{border-color:var(--accent);color:var(--accent)}
 .tb.xt{border-color:var(--purple);color:var(--purple-text)}
 .tb.xt:hover{background:var(--purple-bg)}
 .tb.danger:hover{border-color:var(--red);color:var(--red)}
-
 #fileInput{display:none}
+
 .url-wrap{display:flex;gap:3px;align-items:center}
-.url-inp{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--fm);font-size:11px;padding:4px 7px;width:200px;outline:none;transition:border-color .15s}
+.url-inp{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--fm);font-size:11px;padding:4px 7px;width:190px;outline:none;transition:border-color .15s}
 .url-inp:focus{border-color:var(--accent)}
 .url-inp::placeholder{color:var(--text4)}
 .go{background:var(--accent);border:none;border-radius:4px;color:#000;font-family:var(--fi);font-size:12px;font-weight:700;padding:4px 9px;cursor:pointer;transition:opacity .15s}
 .go:hover{opacity:.85}
 
-.status{margin-right:auto;display:flex;align-items:center;gap:7px;font-family:var(--fm);font-size:11px;color:var(--text2)}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--text4)}
+.status{margin-right:auto;display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:11px;color:var(--text2);white-space:nowrap}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--text4);flex-shrink:0}
 .sdot.live{background:var(--green);box-shadow:0 0 5px var(--green);animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 
-#main{display:flex;flex:1;overflow:hidden;min-height:0}
+/* HTTPS BANNER */
+#httpsBanner{background:linear-gradient(135deg,#1a0a2e,#0d1a2e);border-bottom:1px solid var(--purple);padding:7px 12px;display:none;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;font-size:12px;color:var(--text2)}
+#httpsBanner.show{display:flex}
+.hb-inp{background:var(--bg3);border:1px solid var(--purple);border-radius:4px;color:var(--text);font-family:var(--fm);font-size:11px;padding:4px 8px;outline:none;flex:1;min-width:180px;direction:ltr}
+.hb-btn{background:var(--purple);border:none;border-radius:4px;color:#fff;font-family:var(--fi);font-size:12px;font-weight:700;padding:4px 10px;cursor:pointer}
+.hb-x{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 2px}
 
-/* SIDEBAR */
-#sidebar{width:var(--sb);min-width:var(--sb);background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;transition:width .2s,min-width .2s,border .2s}
+/* ══ MAIN ══ */
+#main{display:flex;flex:1;overflow:hidden;min-height:0;position:relative}
+
+/* ══ VIDEO GRID ══ */
+#vgrid{flex:1;display:grid;gap:var(--gap);background:#000;overflow:hidden;padding:var(--gap);min-height:0}
+#vgrid.l1{grid-template-columns:1fr;grid-template-rows:1fr}
+#vgrid.l2{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
+#vgrid.l3{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr}
+#vgrid.l4{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+#vgrid.l6{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr}
+
+/* ══ VIDEO PANEL ══ */
+.vpanel{position:relative;background:#000;border:2px solid transparent;border-radius:2px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.vpanel.sel{border-color:var(--accent)}
+.vpanel.dragover{border-color:var(--blue);background:rgba(59,130,246,.08)}
+.vpanel video{width:100%;height:100%;object-fit:contain;display:block}
+
+.p-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;pointer-events:none}
+.p-num{font-family:var(--fi);font-size:40px;font-weight:700;color:var(--border2);line-height:1}
+.p-hint{font-family:var(--fi);font-size:10px;letter-spacing:1px;color:var(--text4)}
+
+/* Panel top bar — always visible, minimal */
+.p-top{position:absolute;top:0;left:0;right:0;padding:4px 6px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(rgba(0,0,0,.6),transparent);z-index:2}
+.live-badge{font-family:var(--fi);font-size:9px;font-weight:700;letter-spacing:1px;background:var(--red);color:#fff;padding:2px 4px;border-radius:2px;display:none}
+.vpanel.active-stream .live-badge{display:inline}
+.sel-badge{font-family:var(--fi);font-size:9px;font-weight:700;background:var(--accent);color:#000;padding:2px 4px;border-radius:2px;display:none}
+.vpanel.sel .sel-badge{display:inline}
+/* Pick channel button — always visible */
+.p-pick{background:rgba(232,160,32,.25);border:1px solid rgba(232,160,32,.5);border-radius:4px;color:var(--accent);font-size:14px;cursor:pointer;padding:2px 6px;line-height:1;transition:background .15s}
+.p-pick:hover,.p-pick:active{background:rgba(232,160,32,.45)}
+
+/* Panel bottom bar */
+.p-bottom{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:14px 6px 5px;display:flex;align-items:flex-end;justify-content:space-between;opacity:0;transition:opacity .2s;z-index:2}
+.vpanel:hover .p-bottom,.vpanel.sel .p-bottom{opacity:1}
+.p-chname{font-family:var(--fi);font-size:12px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.p-ctrls{display:flex;gap:3px;flex-shrink:0}
+.p-btn{width:28px;height:28px;background:rgba(255,255,255,.15);border:none;border-radius:3px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background .15s;backdrop-filter:blur(4px);flex-shrink:0}
+.p-btn:hover,.p-btn:active{background:rgba(255,255,255,.35)}
+.p-btn.on{background:rgba(232,160,32,.45)}
+
+.p-loading{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.65);z-index:3}
+.p-loading.show{display:flex}
+.spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.p-error{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:rgba(0,0,0,.82);color:var(--red);font-family:var(--fi);font-size:12px;padding:10px;text-align:center;z-index:3}
+.p-error.show{display:flex}
+.p-retry{background:var(--bg3);border:1px solid var(--red);color:var(--red);padding:4px 10px;border-radius:3px;cursor:pointer;font-family:var(--fi);font-size:11px;margin-top:2px}
+.p-retry:active{background:rgba(239,68,68,.15)}
+.p-errurl{font-family:var(--fm);font-size:9px;color:#f87171;word-break:break-all;max-width:90%;opacity:.7;margin-top:2px}
+
+.p-drop{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:var(--fi);font-size:14px;letter-spacing:2px;color:var(--blue);pointer-events:none;z-index:3}
+.vpanel.dragover .p-drop{display:flex}
+
+/* ══ SIDEBAR ══ */
+#sidebar{
+  width:var(--sb);min-width:var(--sb);background:var(--bg2);
+  border-left:1px solid var(--border);display:flex;flex-direction:column;
+  overflow:hidden;flex-shrink:0;transition:transform .25s,width .25s,min-width .25s;
+}
 #sidebar.hidden{width:0;min-width:0;border-left:none}
 
 .sb-top{padding:8px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
 .sb-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .sb-title{font-family:var(--fi);font-size:11px;font-weight:600;letter-spacing:2px;color:var(--text2);text-transform:uppercase}
 .sb-count{font-family:var(--fm);color:var(--accent);font-size:11px}
-
 .search-wrap{position:relative}
-.search-box{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:13px;padding:6px 28px 6px 28px;outline:none;font-family:var(--fb);transition:border-color .15s;direction:rtl}
+.search-box{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:13px;padding:6px 28px 6px 26px;outline:none;font-family:var(--fb);transition:border-color .15s;direction:rtl}
 .search-box:focus{border-color:var(--accent)}
 .search-box::placeholder{color:var(--text4)}
-.s-ico{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none}
-.s-clr{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;cursor:pointer;background:none;border:none;display:none;line-height:1;padding:0}
-.s-clr:hover{color:var(--red)}
+.s-ico{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;pointer-events:none}
+.s-clr{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;cursor:pointer;background:none;border:none;display:none;line-height:1;padding:0}
 
 .sort-bar{display:flex;gap:4px;padding:5px 10px;border-bottom:1px solid var(--border);flex-shrink:0;align-items:center}
 .sort-lbl{font-family:var(--fi);font-size:10px;letter-spacing:1px;color:var(--text3);margin-left:auto}
 .sort-btn{font-family:var(--fi);font-size:11px;padding:2px 7px;border-radius:3px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .12s}
-.sort-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sort-btn:hover,.sort-btn:active{border-color:var(--accent);color:var(--accent)}
 .sort-btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
 
 .sb-body{display:flex;flex:1;overflow:hidden;min-height:0}
-
-/* category panel */
 #catPanel{width:var(--cats);min-width:var(--cats);background:var(--bg3);border-left:1px solid var(--border);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
 #catPanel::-webkit-scrollbar{width:3px}
 #catPanel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-
-.cat-item{padding:7px 7px;cursor:pointer;border-bottom:1px solid rgba(28,37,53,.7);transition:background .12s;display:flex;flex-direction:column;gap:2px;border-right:2px solid transparent}
-.cat-item:hover{background:var(--bg4)}
+.cat-item{padding:7px 6px;cursor:pointer;border-bottom:1px solid rgba(28,37,53,.7);transition:background .12s;display:flex;flex-direction:column;gap:2px;border-right:2px solid transparent}
+.cat-item:hover,.cat-item:active{background:var(--bg4)}
 .cat-item.on{background:var(--accent-bg);border-right-color:var(--accent)}
-.cat-name{font-family:var(--fi);font-size:11px;font-weight:600;color:var(--text);letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-name{font-family:var(--fi);font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cat-item.on .cat-name{color:var(--accent)}
 .cat-cnt{font-family:var(--fm);font-size:9px;color:var(--text3)}
 .cat-item.on .cat-cnt{color:var(--accent)}
 
-/* virtual channel list */
-#chWrap{flex:1;overflow-y:auto;position:relative;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+#chWrap{flex:1;overflow-y:auto;position:relative;scrollbar-width:thin;scrollbar-color:var(--border2) transparent;-webkit-overflow-scrolling:touch}
 #chWrap::-webkit-scrollbar{width:3px}
 #chWrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 #chSpacer{position:relative}
 #chInner{position:absolute;top:0;left:0;right:0}
 
 .ch-item{display:flex;align-items:center;gap:7px;padding:5px 8px;cursor:pointer;transition:background .1s;border-bottom:1px solid rgba(28,37,53,.5);user-select:none;height:44px}
-.ch-item:hover{background:var(--bg3)}
+.ch-item:hover,.ch-item:active{background:var(--bg3)}
 .ch-item.flash{background:var(--accent-bg)}
 .ch-logo{width:30px;height:30px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fi);font-weight:700;font-size:12px;color:var(--accent);background:var(--bg4);overflow:hidden}
 .ch-logo img{width:100%;height:100%;object-fit:contain}
@@ -127,48 +184,10 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
 .le-icon{font-size:36px;opacity:.2}
 .le-txt{font-family:var(--fi);font-size:13px;font-weight:600;letter-spacing:1px;color:var(--text3)}
 
-/* VIDEO GRID */
-#vgrid{flex:1;display:grid;gap:var(--gap);background:#000;overflow:hidden;padding:var(--gap);min-height:0}
-#vgrid.l1{grid-template-columns:1fr;grid-template-rows:1fr}
-#vgrid.l2{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
-#vgrid.l3{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr}
-#vgrid.l4{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
-#vgrid.l6{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr}
-
-/* VIDEO PANEL */
-.vpanel{position:relative;background:#000;border:2px solid transparent;border-radius:2px;overflow:hidden;cursor:pointer;transition:border-color .15s}
-.vpanel.sel{border-color:var(--accent)}
-.vpanel.dragover{border-color:var(--blue);background:rgba(59,130,246,.08)}
-.vpanel video{width:100%;height:100%;object-fit:contain;display:block}
-.p-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;pointer-events:none}
-.p-num{font-family:var(--fi);font-size:52px;font-weight:700;color:var(--border2);line-height:1}
-.p-hint{font-family:var(--fi);font-size:11px;letter-spacing:1px;color:var(--text4)}
-.p-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.88));padding:18px 8px 7px;display:flex;align-items:flex-end;justify-content:space-between;opacity:0;transition:opacity .2s;pointer-events:none}
-.vpanel:hover .p-overlay{opacity:1;pointer-events:auto}
-.p-chname{font-family:var(--fi);font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
-.p-ctrls{display:flex;gap:3px;flex-shrink:0}
-.p-btn{width:25px;height:25px;background:rgba(255,255,255,.15);border:none;border-radius:3px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:background .15s;backdrop-filter:blur(4px)}
-.p-btn:hover{background:rgba(255,255,255,.3)}
-.p-btn.on{background:rgba(232,160,32,.45)}
-.p-top{position:absolute;top:0;left:0;right:0;padding:5px 7px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(rgba(0,0,0,.55),transparent);opacity:0;transition:opacity .2s;pointer-events:none}
-.vpanel:hover .p-top{opacity:1}
-.live-badge{font-family:var(--fi);font-size:9px;font-weight:700;letter-spacing:1px;background:var(--red);color:#fff;padding:2px 5px;border-radius:2px}
-.sel-badge{font-family:var(--fi);font-size:9px;font-weight:700;letter-spacing:1px;background:var(--accent);color:#000;padding:2px 5px;border-radius:2px}
-.p-loading{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.65)}
-.p-loading.show{display:flex}
-.spinner{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.p-error{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(0,0,0,.8);color:var(--red);font-family:var(--fi);font-size:12px}
-.p-error.show{display:flex}
-.p-retry{background:var(--bg3);border:1px solid var(--red);color:var(--red);padding:3px 8px;border-radius:3px;cursor:pointer;font-family:var(--fi);font-size:11px;margin-top:4px}
-.p-retry:hover{background:rgba(239,68,68,.15)}
-.p-drop{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:var(--fi);font-size:16px;letter-spacing:2px;color:var(--blue);pointer-events:none}
-.vpanel.dragover .p-drop{display:flex}
-
-/* MODALS */
-.mbg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:500}
+/* ══ MODALS ══ */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:400;padding:12px}
 .mbg.show{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:20px;width:440px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:18px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto}
 .modal h3{font-family:var(--fi);font-size:15px;font-weight:700;letter-spacing:1px;color:var(--accent);margin-bottom:14px}
 .modal h3.xt{color:var(--purple-text)}
 .mnote{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:10px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.6}
@@ -177,94 +196,113 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
 .finp:focus{border-color:var(--accent)}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .chk-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.chk-lbl{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text);background:var(--bg3);border:1px solid var(--border);padding:4px 10px;border-radius:3px}
+.chk-lbl{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text);background:var(--bg3);border:1px solid var(--border);padding:5px 10px;border-radius:3px}
 .chk-lbl input{accent-color:var(--purple)}
 .rad-row{display:flex;gap:10px;margin-bottom:14px}
 .rad-lbl{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text)}
 .rad-lbl input{accent-color:var(--purple)}
-.macts{display:flex;gap:8px;margin-top:4px}
-.btn-p{flex:1;background:var(--accent);border:none;border-radius:4px;color:#000;font-family:var(--fi);font-size:13px;font-weight:700;padding:7px;cursor:pointer;letter-spacing:.5px;transition:opacity .15s}
+.macts{display:flex;gap:8px;margin-top:6px}
+.btn-p{flex:1;background:var(--accent);border:none;border-radius:4px;color:#000;font-family:var(--fi);font-size:14px;font-weight:700;padding:9px;cursor:pointer;transition:opacity .15s}
 .btn-p:hover{opacity:.85}
-.btn-p.xt{background:var(--purple);color:#fff}
 .btn-p:disabled{opacity:.4;cursor:not-allowed}
-.btn-s{background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--fi);font-size:13px;font-weight:600;padding:7px 14px;cursor:pointer;transition:all .15s}
-.btn-s:hover{border-color:var(--text2)}
+.btn-p.xt{background:var(--purple);color:#fff}
+.btn-s{background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--fi);font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer}
 .xc-st{font-family:var(--fm);font-size:11px;color:var(--text2);margin:8px 0;min-height:16px;text-align:center}
 .info-row{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
-.info-lbl{font-family:var(--fi);font-size:11px;color:var(--text2);width:65px;flex-shrink:0;letter-spacing:.3px;padding-top:1px}
+.info-lbl{font-family:var(--fi);font-size:11px;color:var(--text2);width:65px;flex-shrink:0}
 .info-val{font-size:11px;color:var(--text);flex:1;word-break:break-all;font-family:var(--fm)}
 
-#scanlines{position:fixed;inset:0;pointer-events:none;z-index:999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px)}
+/* ══ CHANNEL PICKER (per-panel) ══ */
+#chPicker{position:fixed;z-index:500;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;width:min(320px,92vw);max-height:70vh;display:none;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.6)}
+#chPicker.show{display:flex}
+.picker-head{padding:8px 10px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;gap:6px}
+.picker-search{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:13px;padding:5px 8px;outline:none;font-family:var(--fb);direction:rtl}
+.picker-search:focus{border-color:var(--accent)}
+.picker-search::placeholder{color:var(--text4)}
+.picker-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:0 4px}
+.picker-close:hover{color:var(--red)}
+#pickerList{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+.picker-item{display:flex;align-items:center;gap:8px;padding:7px 10px;cursor:pointer;border-bottom:1px solid rgba(28,37,53,.5);transition:background .1s}
+.picker-item:hover,.picker-item:active{background:var(--bg3)}
+.picker-logo{width:26px;height:26px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fi);font-weight:700;font-size:11px;color:var(--accent);background:var(--bg4);overflow:hidden}
+.picker-logo img{width:100%;height:100%;object-fit:contain}
+.picker-name{font-size:12px;font-weight:500;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.picker-grp{font-family:var(--fm);font-size:9px;color:var(--text3)}
+.picker-empty{padding:30px;text-align:center;font-family:var(--fi);color:var(--text3);font-size:13px}
 
-/* HTTPS PROXY BANNER */
-#httpsBanner{
-  background:linear-gradient(135deg,#1a0a2e,#0d1a2e);
-  border-bottom:1px solid var(--purple);
-  padding:8px 14px;
-  display:none;
-  align-items:center;
-  gap:10px;
-  flex-shrink:0;
-  font-size:12px;
-  color:var(--text2);
+/* ══ MOBILE ══ */
+@media(max-width:640px){
+  :root{--topH:44px;--sb:100vw}
+
+  .url-wrap{display:none} /* hide URL bar, accessible via settings */
+
+  #sidebar{
+    position:fixed;top:var(--topH);right:0;bottom:0;
+    width:var(--sb)!important;min-width:var(--sb)!important;
+    z-index:300;transform:translateX(0);
+    transition:transform .25s;border-left:none;
+    box-shadow:-4px 0 20px rgba(0,0,0,.5);
+  }
+  #sidebar.hidden{transform:translateX(100%)}
+
+  /* Sidebar overlay backdrop */
+  #sbOverlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;display:none}
+  #sbOverlay.show{display:block}
+
+  .lay-btn[data-l="3"]{display:none}
+  .lay-btn[data-l="6"]{display:none}
+
+  .p-bottom{opacity:1!important} /* always show on touch */
+  .p-btn{width:32px;height:32px;font-size:14px}
+  .p-pick{font-size:16px;padding:3px 7px}
+
+  .logo span{display:none}
 }
-#httpsBanner.show{display:flex}
-.hb-icon{font-size:18px;flex-shrink:0}
-.hb-text{flex:1;line-height:1.5}
-.hb-text b{color:var(--purple-text)}
-.hb-inp{background:var(--bg3);border:1px solid var(--purple);border-radius:4px;color:var(--text);font-family:var(--fm);font-size:11px;padding:4px 8px;outline:none;width:240px;direction:ltr}
-.hb-inp:focus{border-color:var(--purple-text)}
-.hb-btn{background:var(--purple);border:none;border-radius:4px;color:#fff;font-family:var(--fi);font-size:12px;font-weight:700;padding:4px 10px;cursor:pointer;white-space:nowrap}
-.hb-dismiss{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 4px}
-.hb-dismiss:hover{color:var(--text)}
+
+#scanlines{position:fixed;inset:0;pointer-events:none;z-index:999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px)}
 </style>
 </head>
 <body>
 <div id="scanlines"></div>
-
-<!-- HTTPS PROXY BANNER -->
-<div id="httpsBanner">
-  <span class="hb-icon">🔒</span>
-  <span class="hb-text">
-    דף זה רץ על <b>HTTPS</b> — זרמי HTTP חסומים על ידי הדפדפן.
-    הכנס כתובת <b>Cloudflare Worker</b> כ-proxy:
-  </span>
-  <input class="hb-inp" id="hbProxyInp" type="text" placeholder="https://your-worker.workers.dev/?url=">
-  <button class="hb-btn" onclick="applyHbProxy()">הפעל</button>
-  <button class="hb-dismiss" onclick="document.getElementById('httpsBanner').classList.remove('show')" title="סגור">✕</button>
-</div>
+<div id="sbOverlay" onclick="closeSidebar()"></div>
 
 <!-- TOPBAR -->
 <div id="topbar">
   <div class="logo">⬡ StreamGrid <span>MONITOR</span></div>
   <div class="vd"></div>
   <div class="lay-btns" id="layBtns">
-    <button class="lay-btn on" data-l="1" title="1 ערוץ"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="13" height="13" rx="1"/></svg></button>
-    <button class="lay-btn" data-l="2" title="2 ערוצים"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="5.5" height="13" rx="1"/><rect x="8.5" y="1" width="5.5" height="13" rx="1"/></svg></button>
-    <button class="lay-btn" data-l="3" title="3 ערוצים"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="3.5" height="13" rx="1"/><rect x="5.8" y="1" width="3.5" height="13" rx="1"/><rect x="10.5" y="1" width="3.5" height="13" rx="1"/></svg></button>
-    <button class="lay-btn" data-l="4" title="4 ערוצים"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1"/></svg></button>
-    <button class="lay-btn" data-l="6" title="6 ערוצים"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="3.5" height="5.5" rx="1"/><rect x="5.8" y="1" width="3.5" height="5.5" rx="1"/><rect x="10.5" y="1" width="3.5" height="5.5" rx="1"/><rect x="1" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="5.8" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="10.5" y="8.5" width="3.5" height="5.5" rx="1"/></svg></button>
+    <button class="lay-btn on" data-l="1" title="1"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="13" height="13" rx="1"/></svg></button>
+    <button class="lay-btn" data-l="2" title="2"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="5.5" height="13" rx="1"/><rect x="8.5" y="1" width="5.5" height="13" rx="1"/></svg></button>
+    <button class="lay-btn" data-l="3" title="3"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="3.5" height="13" rx="1"/><rect x="5.8" y="1" width="3.5" height="13" rx="1"/><rect x="10.5" y="1" width="3.5" height="13" rx="1"/></svg></button>
+    <button class="lay-btn" data-l="4" title="4"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1"/></svg></button>
+    <button class="lay-btn" data-l="6" title="6"><svg viewBox="0 0 15 15" fill="currentColor"><rect x="1" y="1" width="3.5" height="5.5" rx="1"/><rect x="5.8" y="1" width="3.5" height="5.5" rx="1"/><rect x="10.5" y="1" width="3.5" height="5.5" rx="1"/><rect x="1" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="5.8" y="8.5" width="3.5" height="5.5" rx="1"/><rect x="10.5" y="8.5" width="3.5" height="5.5" rx="1"/></svg></button>
   </div>
   <div class="vd"></div>
-  <button class="tb" onclick="document.getElementById('fileInput').click()">📂 טען M3U</button>
+  <button class="tb" onclick="document.getElementById('fileInput').click()">📂 M3U</button>
   <input type="file" id="fileInput" accept=".m3u,.m3u8,.txt">
   <div class="url-wrap">
-    <input class="url-inp" id="urlInp" type="text" placeholder="https://... פלייליסט URL" dir="ltr">
+    <input class="url-inp" id="urlInp" type="text" placeholder="https://... URL פלייליסט" dir="ltr">
     <button class="go" onclick="loadFromUrl()">GO</button>
   </div>
   <button class="tb xt" onclick="openXtream()">⚡ Xtream</button>
-  <button class="tb danger" id="clearBtn" onclick="clearAll()" style="display:none">✕ נקה</button>
-  <button class="tb" onclick="toggleSidebar()">☰ רשימה</button>
-  <button class="tb" onclick="openSettings()">⚙ הגדרות</button>
-  <div class="status"><div class="sdot" id="sdot"></div><span id="stxt">ממתין לפלייליסט</span></div>
+  <button class="tb danger" id="clearBtn" onclick="clearAll()" style="display:none">✕</button>
+  <button class="tb" onclick="toggleSidebar()">☰</button>
+  <button class="tb" onclick="openSettings()">⚙</button>
+  <div class="status"><div class="sdot" id="sdot"></div><span id="stxt">ממתין</span></div>
+</div>
+
+<!-- HTTPS BANNER -->
+<div id="httpsBanner">
+  <span>🔒 <b style="color:var(--purple-text)">HTTPS</b> — נדרש Stream Proxy:</span>
+  <input class="hb-inp" id="hbInp" type="text" placeholder="https://multv.kushmar.workers.dev/?url=">
+  <button class="hb-btn" onclick="applyProxy()">הפעל</button>
+  <button class="hb-x" onclick="document.getElementById('httpsBanner').classList.remove('show')">✕</button>
 </div>
 
 <!-- MAIN -->
 <div id="main">
   <div id="vgrid" class="l1"></div>
-
   <div id="sidebar">
-    <!-- Search -->
     <div class="sb-top">
       <div class="sb-meta">
         <span class="sb-title">📺 ערוצים</span>
@@ -272,18 +310,16 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
       </div>
       <div class="search-wrap">
         <span class="s-ico">🔍</span>
-        <input class="search-box" id="searchBox" type="text" placeholder="חיפוש שם, קטגוריה..." autocomplete="off">
+        <input class="search-box" id="searchBox" type="text" placeholder="חיפוש..." autocomplete="off">
         <button class="s-clr" id="sClr" onclick="clearSearch()">✕</button>
       </div>
     </div>
-    <!-- Sort -->
     <div class="sort-bar">
       <span class="sort-lbl">מיון:</span>
       <button class="sort-btn on" data-s="def">ברירת מחדל</button>
       <button class="sort-btn" data-s="az">א→ת</button>
       <button class="sort-btn" data-s="za">ת→א</button>
     </div>
-    <!-- Two-panel body -->
     <div class="sb-body">
       <div id="catPanel"></div>
       <div id="chWrap"><div id="chSpacer"><div id="chInner"></div></div></div>
@@ -291,9 +327,18 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
   </div>
 </div>
 
+<!-- CHANNEL PICKER -->
+<div id="chPicker">
+  <div class="picker-head">
+    <input class="picker-search" id="pickerSearch" type="text" placeholder="חיפוש ערוץ..." autocomplete="off">
+    <button class="picker-close" onclick="closePicker()">✕</button>
+  </div>
+  <div id="pickerList"></div>
+</div>
+
 <!-- INFO MODAL -->
 <div class="mbg" id="infoModal" onclick="if(event.target===this)closeInfo()">
-  <div class="modal" style="width:380px">
+  <div class="modal" style="max-width:360px">
     <h3>פרטי ערוץ</h3>
     <div id="infoRows"></div>
     <div class="macts" style="margin-top:12px"><button class="btn-s" style="flex:1" onclick="closeInfo()">סגור</button></div>
@@ -303,21 +348,25 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
 <!-- SETTINGS MODAL -->
 <div class="mbg" id="settingsModal" onclick="if(event.target===this)closeSettings()">
   <div class="modal">
-    <h3>⚙ הגדרות זרם</h3>
-    <div class="mnote">ערוצים חסומים לרוב דורשים <b style="color:var(--accent)">Referer</b> תקין בכותרת ה-HTTP. הכנס את דומיין הספק שלך.</div>
+    <h3>⚙ הגדרות</h3>
+    <label class="flbl">URL פלייליסט (M3U)</label>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <input class="finp" id="set-url" type="text" placeholder="https://..." dir="ltr" style="margin-bottom:0;flex:1">
+      <button class="btn-p" style="flex:0 0 auto;padding:6px 12px" onclick="loadSavedUrl()">טען</button>
+    </div>
+    <label class="flbl">Stream Proxy (HTTPS→HTTP)</label>
+    <input class="finp" id="set-sp" type="text" placeholder="https://multv.kushmar.workers.dev/?url=" dir="ltr">
     <label class="flbl">Referer Header</label>
     <input class="finp" id="set-ref" type="text" placeholder="https://play-berry.net" dir="ltr">
     <label class="flbl">User-Agent (אופציונלי)</label>
     <input class="finp" id="set-ua" type="text" placeholder="Mozilla/5.0 ..." dir="ltr">
-    <label class="flbl">Stream Proxy</label>
-    <input class="finp" id="set-sp" type="text" placeholder="http://localhost:8888/proxy?url=" dir="ltr">
-    <label class="flbl" style="margin-bottom:8px">הגדרות HLS</label>
+    <label class="flbl" style="margin-bottom:8px">HLS</label>
     <div class="chk-row">
-      <label class="chk-lbl"><input type="checkbox" id="set-ll" checked> Low-latency</label>
-      <label class="chk-lbl"><input type="checkbox" id="set-wk"> Enable worker</label>
+      <label class="chk-lbl"><input type="checkbox" id="set-ll"> Low-latency</label>
+      <label class="chk-lbl"><input type="checkbox" id="set-wk"> Worker</label>
     </div>
     <div class="macts">
-      <button class="btn-p" onclick="saveSettings()">✓ שמור והפעל מחדש</button>
+      <button class="btn-p" onclick="saveSettings()">✓ שמור</button>
       <button class="btn-s" onclick="closeSettings()">ביטול</button>
     </div>
   </div>
@@ -327,23 +376,20 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
 <div class="mbg" id="xtreamModal" onclick="if(event.target===this)closeXtream()">
   <div class="modal">
     <h3 class="xt">⚡ Xtream Codes</h3>
-    <div class="mnote" style="border-color:var(--purple)">
-      הפרטים נשמרים אוטומטית במכשיר שלך (localStorage).<br>
-      תמיכה בערוצים חיים, VOD וסדרות — עד 30,000+ פריטים.
-    </div>
+    <div class="mnote" style="border-color:var(--purple)">פרטים נשמרים אוטומטית. תמיכה ב-30,000+ ערוצים.</div>
     <label class="flbl">Server URL</label>
     <input class="finp" id="xc-srv" type="text" placeholder="http://server.com:8080" dir="ltr">
     <div class="frow">
-      <div><label class="flbl">Username</label><input class="finp" id="xc-usr" type="text" placeholder="username" dir="ltr" style="margin-bottom:0"></div>
-      <div><label class="flbl">Password</label><input class="finp" id="xc-pwd" type="password" placeholder="••••••" dir="ltr" style="margin-bottom:0"></div>
+      <div><label class="flbl">Username</label><input class="finp" id="xc-usr" type="text" dir="ltr" style="margin-bottom:0"></div>
+      <div><label class="flbl">Password</label><input class="finp" id="xc-pwd" type="password" dir="ltr" style="margin-bottom:0"></div>
     </div>
-    <label class="flbl" style="margin-top:10px">תוכן לטעינה</label>
+    <label class="flbl" style="margin-top:10px">תוכן</label>
     <div class="chk-row">
-      <label class="chk-lbl"><input type="checkbox" id="xc-live" checked> 📺 ערוצים חיים</label>
+      <label class="chk-lbl"><input type="checkbox" id="xc-live" checked> 📺 Live</label>
       <label class="chk-lbl"><input type="checkbox" id="xc-vod"> 🎬 VOD</label>
       <label class="chk-lbl"><input type="checkbox" id="xc-ser"> 📂 סדרות</label>
     </div>
-    <label class="flbl">פורמט זרם</label>
+    <label class="flbl">פורמט</label>
     <div class="rad-row">
       <label class="rad-lbl"><input type="radio" name="xfmt" value="ts" checked> TS</label>
       <label class="rad-lbl"><input type="radio" name="xfmt" value="m3u8"> M3U8</label>
@@ -351,32 +397,26 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
     </div>
     <div class="xc-st" id="xcSt"></div>
     <div class="macts">
-      <button class="btn-p xt" id="xcBtn" onclick="connectXtream()">⚡ התחבר וטען</button>
+      <button class="btn-p xt" id="xcBtn" onclick="connectXtream()">⚡ התחבר</button>
       <button class="btn-s" onclick="closeXtream()">ביטול</button>
     </div>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════
-// STATE
-// ════════════════════════════════
+// ════════ STATE ════════
 let channels=[], filtered=[], curCat='__all__', sortMode='def', searchQ='';
 let panels=[], activePanel=0, dragIdx=null;
-let sett={referer:'',ua:'',sproxy:'',lowlat:true,worker:false};
-const ITEM_H=44;
+let sett={sproxy:'',referer:'',ua:'',lowlat:false,worker:false};
+let pickerForPanel=-1;
+const ITEM_H=44, BUF=8;
 
-// ════════════════════════════════
-// STORAGE
-// ════════════════════════════════
+// ════════ STORAGE ════════
 const ss=k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}};
 const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 
-// ════════════════════════════════
-// PROXIES
-// ════════════════════════════════
-const PROXIES=[u=>u,u=>'https://corsproxy.io/?'+encodeURIComponent(u),u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),u=>'https://thingproxy.freeboard.io/fetch/'+u];
-
+// ════════ PROXIES ════════
+const PROXIES=[u=>u,u=>'https://corsproxy.io/?'+encodeURIComponent(u),u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u)];
 async function pfetch(url,json=false){
   for(const p of PROXIES){
     try{const r=await fetch(p(url),{signal:AbortSignal.timeout(10000)});if(!r.ok)continue;return json?r.json():r.text()}catch{}
@@ -384,9 +424,7 @@ async function pfetch(url,json=false){
   throw new Error('לא ניתן להגיע לשרת');
 }
 
-// ════════════════════════════════
-// M3U PARSER
-// ════════════════════════════════
+// ════════ M3U PARSER ════════
 function parseM3U(raw){
   const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean),res=[];
   for(let i=0;i<lines.length;i++){
@@ -404,29 +442,39 @@ function parseM3U(raw){
   return res;
 }
 
-// ════════════════════════════════
-// LOAD
-// ════════════════════════════════
+// ════════ LOAD ════════
 function loadChannels(data){
   if(Array.isArray(data)){channels=data}
-  else{channels=parseM3U(data);if(!channels.length){setStatus('לא נמצאו ערוצים',false);return}}
+  else{
+    channels=parseM3U(data);
+    if(!channels.length){setStatus('לא נמצאו ערוצים',false);return}
+  }
   searchQ='';curCat='__all__';sortMode='def';
   document.getElementById('searchBox').value='';
   document.getElementById('sClr').style.display='none';
-  document.querySelectorAll('.sort-btn').forEach(b=>{b.classList.toggle('on',b.dataset.s==='def')});
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('on',b.dataset.s==='def'));
   document.getElementById('clearBtn').style.display='flex';
   rebuildCats();applyFilters();
-  setStatus(channels.length.toLocaleString()+' ערוצים נטענו',true);
+  setStatus(channels.length.toLocaleString()+' ערוצים',true);
+  restoreLastChannels();
 }
 
-async function loadFromUrl(){
-  const url=document.getElementById('urlInp').value.trim();if(!url)return;
+async function loadFromUrl(url){
+  url=url||(document.getElementById('urlInp').value.trim());
+  if(!url)return;
+  sv('sg_url',url); // save URL
+  document.getElementById('set-url').value=url;
   setStatus('טוען...',false);
   try{
     const txt=await pfetch(url);
-    if(!txt.includes('#EXTM3U')&&!txt.includes('#EXTINF'))throw new Error('לא נראה כקובץ M3U');
+    if(!txt.includes('#EXTM3U')&&!txt.includes('#EXTINF'))throw new Error('לא קובץ M3U תקין');
     loadChannels(txt);
   }catch(e){setStatus('שגיאה: '+e.message,false)}
+}
+
+function loadSavedUrl(){
+  const url=document.getElementById('set-url').value.trim();
+  if(url){closeSettings();loadFromUrl(url)}
 }
 
 document.getElementById('urlInp').addEventListener('keydown',e=>{if(e.key==='Enter')loadFromUrl()});
@@ -437,30 +485,37 @@ document.getElementById('fileInput').addEventListener('change',e=>{
 document.addEventListener('dragover',e=>{if(e.dataTransfer.types.includes('Files'))e.preventDefault()});
 document.addEventListener('drop',e=>{
   if(!e.dataTransfer.types.includes('Files'))return;
-  e.preventDefault();
-  const f=e.dataTransfer.files[0];
+  e.preventDefault();const f=e.dataTransfer.files[0];
   if(f&&/\.(m3u8?|txt)$/i.test(f.name)){const r=new FileReader();r.onload=ev=>loadChannels(ev.target.result);r.readAsText(f,'utf-8')}
 });
 
-// ════════════════════════════════
-// CATEGORIES
-// ════════════════════════════════
-let catCounts={},catOrder=[];
+// ════════ LAST CHANNELS ════════
+function saveLastChannels(){
+  const last=panels.map(p=>p.chIdx>=0?channels[p.chIdx]?.url||null:null);
+  sv('sg_last',last);
+}
 
+function restoreLastChannels(){
+  const last=ss('sg_last');if(!last||!Array.isArray(last))return;
+  last.forEach((url,pi)=>{
+    if(!url||pi>=panels.length)return;
+    const ci=channels.findIndex(c=>c.url===url);
+    if(ci>=0)assign(pi,ci);
+  });
+}
+
+// ════════ CATEGORIES ════════
+let catCounts={},catOrder=[];
 function rebuildCats(){
-  catCounts={};
-  channels.forEach(c=>{catCounts[c.group]=(catCounts[c.group]||0)+1});
+  catCounts={};channels.forEach(c=>{catCounts[c.group]=(catCounts[c.group]||0)+1});
   catOrder=Object.keys(catCounts).sort((a,b)=>catCounts[b]-catCounts[a]);
   renderCats();
 }
-
 function renderCats(){
-  const cp=document.getElementById('catPanel');
-  cp.innerHTML='';
-  const mk=(key,label,cnt)=>{
-    const el=document.createElement('div');
-    el.className='cat-item'+(key===curCat?' on':'');
-    el.innerHTML=`<div class="cat-name">${esc(label)}</div><div class="cat-cnt">${cnt.toLocaleString()}</div>`;
+  const cp=document.getElementById('catPanel');cp.innerHTML='';
+  const mk=(key,lbl,cnt)=>{
+    const el=document.createElement('div');el.className='cat-item'+(key===curCat?' on':'');
+    el.innerHTML=`<div class="cat-name">${esc(lbl)}</div><div class="cat-cnt">${cnt.toLocaleString()}</div>`;
     el.onclick=()=>{curCat=key;cp.querySelectorAll('.cat-item').forEach(x=>x.classList.remove('on'));el.classList.add('on');applyFilters()};
     return el;
   };
@@ -468,112 +523,155 @@ function renderCats(){
   catOrder.forEach(g=>cp.appendChild(mk(g,g,catCounts[g])));
 }
 
-// ════════════════════════════════
-// FILTER + SORT
-// ════════════════════════════════
+// ════════ FILTER ════════
 let stimer=null;
-
 document.getElementById('searchBox').addEventListener('input',e=>{
-  searchQ=e.target.value;
-  document.getElementById('sClr').style.display=searchQ?'block':'none';
+  searchQ=e.target.value;document.getElementById('sClr').style.display=searchQ?'block':'none';
   clearTimeout(stimer);stimer=setTimeout(applyFilters,100);
 });
-
 document.querySelectorAll('.sort-btn').forEach(b=>{
-  b.onclick=()=>{
-    sortMode=b.dataset.s;
-    document.querySelectorAll('.sort-btn').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');applyFilters();
-  };
+  b.onclick=()=>{sortMode=b.dataset.s;document.querySelectorAll('.sort-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');applyFilters()};
 });
-
-function clearSearch(){
-  searchQ='';document.getElementById('searchBox').value='';
-  document.getElementById('sClr').style.display='none';
-  applyFilters();
-}
+function clearSearch(){searchQ='';document.getElementById('searchBox').value='';document.getElementById('sClr').style.display='none';applyFilters()}
 
 function applyFilters(){
   const sq=searchQ.trim().toLowerCase();
   let res=channels;
   if(curCat!=='__all__')res=res.filter(c=>c.group===curCat);
-  if(sq){
-    const toks=sq.split(/\s+/);
-    res=res.filter(c=>{const h=(c.name+' '+c.group).toLowerCase();return toks.every(t=>h.includes(t))});
-  }
+  if(sq){const toks=sq.split(/\s+/);res=res.filter(c=>{const h=(c.name+' '+c.group).toLowerCase();return toks.every(t=>h.includes(t))})}
   if(sortMode==='az')res=[...res].sort((a,b)=>a.name.localeCompare(b.name,'he'));
   else if(sortMode==='za')res=[...res].sort((a,b)=>b.name.localeCompare(a.name,'he'));
   filtered=res;
   document.getElementById('sbCount').textContent=filtered.length.toLocaleString()+' / '+channels.length.toLocaleString();
-  // reset scroll and render
-  const wrap=document.getElementById('chWrap');
-  wrap.scrollTop=0;
+  document.getElementById('chWrap').scrollTop=0;
   renderV(0);
 }
 
-// ════════════════════════════════
-// VIRTUAL SCROLL
-// ════════════════════════════════
-const BUF=8;
-
+// ════════ VIRTUAL SCROLL ════════
 function renderV(st){
-  const wrap=document.getElementById('chWrap');
-  const spacer=document.getElementById('chSpacer');
-  const inner=document.getElementById('chInner');
+  const wrap=document.getElementById('chWrap'),spacer=document.getElementById('chSpacer'),inner=document.getElementById('chInner');
   if(!filtered.length){
-    spacer.style.height='200px';
-    inner.style.top='0';
-    inner.innerHTML=`<div class="list-empty"><div class="le-icon">🔍</div><div class="le-txt">${searchQ?'לא נמצאו תוצאות':'אין ערוצים'}</div></div>`;
+    spacer.style.height='200px';inner.style.top='0';
+    inner.innerHTML=`<div class="list-empty"><div class="le-icon">🔍</div><div class="le-txt">${searchQ?'לא נמצאו':'אין ערוצים'}</div></div>`;
     return;
   }
-  const totalH=filtered.length*ITEM_H;
-  spacer.style.height=totalH+'px';
-  const wH=wrap.clientHeight||600;
-  const scrollTop=st??wrap.scrollTop;
+  const totalH=filtered.length*ITEM_H;spacer.style.height=totalH+'px';
+  const wH=wrap.clientHeight||600,scrollTop=st??wrap.scrollTop;
   const s=Math.max(0,Math.floor(scrollTop/ITEM_H)-BUF);
   const e=Math.min(filtered.length,Math.ceil((scrollTop+wH)/ITEM_H)+BUF);
-  inner.style.top=(s*ITEM_H)+'px';
-  inner.innerHTML='';
+  inner.style.top=(s*ITEM_H)+'px';inner.innerHTML='';
   const sq=searchQ.trim().toLowerCase();
   for(let i=s;i<e;i++)inner.appendChild(mkChEl(filtered[i],i,sq));
 }
-
 function mkChEl(ch,vi,sq){
-  const el=document.createElement('div');
-  el.className='ch-item';el.draggable=true;
+  const el=document.createElement('div');el.className='ch-item';el.draggable=true;
   const logo=document.createElement('div');logo.className='ch-logo';
   if(ch.logo){const img=new Image();img.src=ch.logo;img.onerror=()=>{logo.textContent=ch.name[0]?.toUpperCase()||'?';img.remove()};logo.appendChild(img)}
   else logo.textContent=ch.name[0]?.toUpperCase()||'?';
   const info=document.createElement('div');info.className='ch-info';
-  const dn=sq?hilite(ch.name,sq):esc(ch.name);
-  info.innerHTML=`<div class="ch-name">${dn}</div><div class="ch-sub">${esc(ch.group)}</div>`;
+  info.innerHTML=`<div class="ch-name">${sq?hilite(ch.name,sq):esc(ch.name)}</div><div class="ch-sub">${esc(ch.group)}</div>`;
   const num=document.createElement('div');num.className='ch-num';num.textContent='#'+(vi+1);
   el.appendChild(logo);el.appendChild(info);el.appendChild(num);
   const ri=channels.indexOf(ch);
-  el.onclick=()=>{assign(activePanel,ri);el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),500)};
+  el.onclick=()=>{assign(activePanel,ri);el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),500);if(window.innerWidth<=640)closeSidebar()};
   el.ondblclick=()=>openInfo(ri);
   el.ondragstart=ev=>{dragIdx=ri;ev.dataTransfer.effectAllowed='copy'};
   el.ondragend=()=>{dragIdx=null};
   return el;
 }
-
 function hilite(text,q){
-  const safe=esc(text);
-  if(!q)return safe;
-  const re=new RegExp('('+q.trim().split(/\s+/).map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','gi');
+  const safe=esc(text),re=new RegExp('('+q.trim().split(/\s+/).map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','gi');
   return safe.replace(re,'<mark>$1</mark>');
 }
-
 document.getElementById('chWrap').addEventListener('scroll',function(){renderV(this.scrollTop)},{passive:true});
 if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>renderV()).observe(document.getElementById('chWrap'));
 
-// ════════════════════════════════
-// PANELS
-// ════════════════════════════════
+// ════════ CHANNEL PICKER ════════
+let pickerFiltered=[];
+let pickerTimer=null;
+
+function openPicker(panelIdx,anchorEl){
+  pickerForPanel=panelIdx;
+  const picker=document.getElementById('chPicker');
+  picker.classList.add('show');
+  document.getElementById('pickerSearch').value='';
+  renderPicker('');
+  setTimeout(()=>document.getElementById('pickerSearch').focus(),50);
+
+  // Position near the button on desktop, centered on mobile
+  if(window.innerWidth>640&&anchorEl){
+    const rect=anchorEl.getBoundingClientRect();
+    picker.style.top=(rect.bottom+6)+'px';
+    picker.style.right=(window.innerWidth-rect.right)+'px';
+    picker.style.left='auto';
+  } else {
+    picker.style.top='50%';picker.style.left='50%';picker.style.right='auto';
+    picker.style.transform='translate(-50%,-50%)';
+  }
+}
+function closePicker(){
+  document.getElementById('chPicker').classList.remove('show');
+  document.getElementById('chPicker').style.transform='';
+  pickerForPanel=-1;
+}
+
+document.getElementById('pickerSearch').addEventListener('input',e=>{
+  clearTimeout(pickerTimer);pickerTimer=setTimeout(()=>renderPicker(e.target.value.trim().toLowerCase()),80);
+});
+
+function renderPicker(q){
+  const list=document.getElementById('pickerList');
+  const items=q?channels.filter(c=>(c.name+' '+c.group).toLowerCase().includes(q)):channels;
+  pickerFiltered=items;
+  if(!items.length){list.innerHTML='<div class="picker-empty">לא נמצאו ערוצים</div>';return}
+  // limit to 200 for picker performance
+  list.innerHTML='';
+  const show=items.slice(0,200);
+  show.forEach(ch=>{
+    const el=document.createElement('div');el.className='picker-item';
+    const logo=document.createElement('div');logo.className='picker-logo';
+    if(ch.logo){const img=new Image();img.src=ch.logo;img.onerror=()=>{logo.textContent=ch.name[0]?.toUpperCase()||'?';img.remove()};logo.appendChild(img)}
+    else logo.textContent=ch.name[0]?.toUpperCase()||'?';
+    const txt=document.createElement('div');
+    txt.innerHTML=`<div class="picker-name">${esc(ch.name)}</div><div class="picker-grp">${esc(ch.group)}</div>`;
+    el.appendChild(logo);el.appendChild(txt);
+    const ri=channels.indexOf(ch);
+    el.onclick=()=>{assign(pickerForPanel,ri);closePicker()};
+    list.appendChild(el);
+  });
+  if(items.length>200){
+    const more=document.createElement('div');more.className='picker-empty';more.style.padding='10px';
+    more.textContent=`+ ${items.length-200} נוספים — צמצם חיפוש`;
+    list.appendChild(more);
+  }
+}
+document.addEventListener('click',e=>{
+  const picker=document.getElementById('chPicker');
+  if(picker.classList.contains('show')&&!picker.contains(e.target)&&!e.target.closest('.p-pick'))closePicker();
+});
+
+// ════════ PANELS ════════
+const switchTimers={};
+
+function destroyHls(p){
+  if(p.hls){try{p.hls.stopLoad();p.hls.detachMedia();p.hls.destroy()}catch{}p.hls=null}
+  try{p.vid.pause();p.vid.removeAttribute('src');p.vid.load()}catch{}
+  p.gen=(p.gen||0)+1;
+}
+
+function hlsCfg(){
+  return{enableWorker:sett.worker,lowLatencyMode:sett.lowlat,backBufferLength:0,
+    maxBufferLength:8,maxMaxBufferLength:12,maxBufferSize:8*1000*1000,maxBufferHole:2,
+    nudgeMaxRetry:3,manifestLoadingMaxRetry:2,manifestLoadingTimeOut:12000,
+    levelLoadingMaxRetry:3,levelLoadingTimeOut:12000,
+    fragLoadingMaxRetry:3,fragLoadingTimeOut:20000,
+    startFragPrefetch:false,testBandwidth:false,progressive:false,
+    startLevel:-1,capLevelToPlayerSize:true};
+}
+
 function buildPanels(n){
   const g=document.getElementById('vgrid');
-  panels.forEach(p=>{if(p.hls){p.hls.destroy();p.hls=null}});
-  panels=[];g.innerHTML='';g.className='l'+n;
+  panels.forEach(p=>destroyHls(p));panels=[];g.innerHTML='';g.className='l'+n;
   for(let i=0;i<n;i++){const p=mkPanel(i);g.appendChild(p.el);panels.push(p)}
   selPanel(0);
 }
@@ -581,31 +679,43 @@ function buildPanels(n){
 function mkPanel(idx){
   const el=document.createElement('div');el.className='vpanel';
   const vid=document.createElement('video');vid.muted=true;vid.playsInline=true;el.appendChild(vid);
+
   const emp=document.createElement('div');emp.className='p-empty';
   emp.innerHTML=`<div class="p-num">${idx+1}</div><div class="p-hint">בחר ערוץ</div>`;el.appendChild(emp);
+
+  // Top bar (always visible)
   const top=document.createElement('div');top.className='p-top';
-  top.innerHTML=`<span class="live-badge">LIVE</span><span class="sel-badge">פעיל</span>`;
-  top.style.display='none';el.appendChild(top);
-  const ov=document.createElement('div');ov.className='p-overlay';
-  ov.innerHTML=`<span class="p-chname"></span><div class="p-ctrls">
+  top.innerHTML=`<span class="live-badge">LIVE</span><span class="sel-badge">פעיל</span>
+    <button class="p-pick" title="בחר ערוץ">📺</button>`;
+  el.appendChild(top);
+
+  // Bottom controls
+  const bot=document.createElement('div');bot.className='p-bottom';
+  bot.innerHTML=`<span class="p-chname"></span><div class="p-ctrls">
     <button class="p-btn mb" title="השתק">🔇</button>
-    <button class="p-btn" title="פרטים" onclick="openInfoPanel(${idx})">ℹ</button>
     <button class="p-btn" title="מסך מלא" onclick="goFS(${idx})">⛶</button>
     <button class="p-btn" title="סגור" onclick="clearPanel(${idx})">✕</button>
-  </div>`;el.appendChild(ov);
+  </div>`;
+  el.appendChild(bot);
+
   const load=document.createElement('div');load.className='p-loading';load.innerHTML='<div class="spinner"></div>';el.appendChild(load);
   const err=document.createElement('div');err.className='p-error';
-  err.innerHTML=`<span>⚠ שגיאה בזרם</span><div id="perr${idx}" style="font-family:var(--fm);font-size:9px;color:#f87171;max-width:90%;word-break:break-all;text-align:center;margin:2px 0;opacity:.7"></div><button class="p-retry" onclick="retryPanel(${idx})">נסה שוב</button>`;el.appendChild(err);
-  const drop=document.createElement('div');drop.className='p-drop';drop.textContent='גרור לכאן';el.appendChild(drop);
-  const p={el,vid,hls:null,chIdx:-1,muted:true,empEl:emp,topEl:top,ovEl:ov,loadEl:load,errEl:err};
-  el.addEventListener('click',e=>{if(!e.target.closest('.p-btn'))selPanel(idx)});
+  err.innerHTML=`<span>⚠ שגיאה</span><div class="p-errurl" id="perr${idx}"></div><button class="p-retry" onclick="retryPanel(${idx})">נסה שוב</button>`;el.appendChild(err);
+  const drop=document.createElement('div');drop.className='p-drop';drop.textContent='גרור';el.appendChild(drop);
+
+  const p={el,vid,hls:null,chIdx:-1,muted:true,gen:0,empEl:emp,loadEl:load,errEl:err,botEl:bot};
+
+  el.addEventListener('click',e=>{if(!e.target.closest('.p-btn')&&!e.target.closest('.p-pick'))selPanel(idx)});
   el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('dragover')});
   el.addEventListener('dragleave',()=>el.classList.remove('dragover'));
   el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('dragover');if(dragIdx!==null)assign(idx,dragIdx)});
-  ov.querySelector('.mb').onclick=ev=>{
+
+  top.querySelector('.p-pick').onclick=e=>{e.stopPropagation();openPicker(idx,e.currentTarget)};
+
+  bot.querySelector('.mb').onclick=ev=>{
     ev.stopPropagation();p.muted=!p.muted;vid.muted=p.muted;
-    ov.querySelector('.mb').textContent=p.muted?'🔇':'🔊';
-    ov.querySelector('.mb').classList.toggle('on',!p.muted);
+    bot.querySelector('.mb').textContent=p.muted?'🔇':'🔊';
+    bot.querySelector('.mb').classList.toggle('on',!p.muted);
   };
   return p;
 }
@@ -614,107 +724,58 @@ function selPanel(idx){
   activePanel=idx;
   panels.forEach((p,i)=>{
     p.el.classList.toggle('sel',i===idx);
-    const sb=p.topEl.querySelector('.sel-badge');
-    if(sb)sb.style.display=i===idx?'inline':'none';
   });
 }
-
-// ── HLS cleanup helper ──────────────────────────
-function destroyHls(p){
-  if(p.hls){
-    try{p.hls.stopLoad();p.hls.detachMedia();p.hls.destroy()}catch{}
-    p.hls=null;
-  }
-  try{
-    p.vid.pause();
-    p.vid.removeAttribute('src');
-    p.vid.load();
-  }catch{}
-  p.gen=(p.gen||0)+1; // invalidate all pending callbacks
-}
-
-// ── HLS config ──────────────────────────────────
-function hlsCfg(){
-  return {
-    enableWorker:false,
-    lowLatencyMode:false,
-    backBufferLength:0,          // no back buffer — free memory immediately
-    maxBufferLength:8,           // 8s forward only
-    maxMaxBufferLength:12,
-    maxBufferSize:8*1000*1000,   // 8MB per panel (6 panels = 48MB max)
-    maxBufferHole:2,
-    nudgeMaxRetry:3,
-    manifestLoadingMaxRetry:2,
-    manifestLoadingTimeOut:12000,
-    levelLoadingMaxRetry:3,
-    levelLoadingTimeOut:12000,
-    fragLoadingMaxRetry:3,
-    fragLoadingTimeOut:20000,
-    startFragPrefetch:false,
-    testBandwidth:false,
-    progressive:false,
-    startLevel:-1,               // auto quality
-    capLevelToPlayerSize:true,   // don't load 4K into a small panel
-    abrEwmaDefaultEstimate:1000000,
-  };
-}
-
-// ── switch debounce ──────────────────────────────
-const switchTimers={};
 
 function clearPanel(idx){
   const p=panels[idx];if(!p)return;
   clearTimeout(switchTimers[idx]);
-  destroyHls(p);
-  p.chIdx=-1;
-  p.empEl.style.display='flex';p.topEl.style.display='none';
+  destroyHls(p);p.chIdx=-1;
+  p.el.classList.remove('active-stream');
+  p.empEl.style.display='flex';
   p.loadEl.classList.remove('show');p.errEl.classList.remove('show');
-  p.ovEl.querySelector('.p-chname').textContent='';
+  p.botEl.querySelector('.p-chname').textContent='';
+  saveLastChannels();
 }
 
 function retryPanel(i){const p=panels[i];if(p?.chIdx>=0){const c=p.chIdx;clearPanel(i);assign(i,c)}}
-function goFS(i){panels[i]?.el.requestFullscreen?.()}
-function openInfoPanel(i){const p=panels[i];if(p?.chIdx>=0)openInfo(p.chIdx)}
+
+function goFS(i){
+  const p=panels[i];if(!p)return;
+  const v=p.vid,el=p.el;
+  // iOS Safari: use video element's fullscreen
+  if(v.webkitEnterFullscreen){v.webkitEnterFullscreen()}
+  else if(el.requestFullscreen){el.requestFullscreen()}
+  else if(el.webkitRequestFullscreen){el.webkitRequestFullscreen()}
+}
 
 function assign(pi,ci){
   if(pi>=panels.length)return;
-  const p=panels[pi],ch=channels[ci];if(!ch)return;
+  const ch=channels[ci];if(!ch)return;
   clearTimeout(switchTimers[pi]);
-  switchTimers[pi]=setTimeout(()=>_doAssign(pi,ci),200);
+  switchTimers[pi]=setTimeout(()=>_doAssign(pi,ci),180);
   selPanel(pi);
-  p.ovEl.querySelector('.p-chname').textContent=ch.name;
+  panels[pi].botEl.querySelector('.p-chname').textContent=ch.name;
   selPanel((pi+1)%panels.length);
 }
 
 function _doAssign(pi,ci){
   const p=panels[pi],ch=channels[ci];if(!p||!ch)return;
-  destroyHls(p);                  // bumps p.gen
-  const gen=p.gen;                // capture current generation
-
-  p.chIdx=ci;
+  destroyHls(p);const gen=p.gen;
+  p.chIdx=ci;p.el.classList.add('active-stream');
   p.errEl.classList.remove('show');p.empEl.style.display='none';
-  p.loadEl.classList.add('show');p.topEl.style.display='flex';
-  p.ovEl.querySelector('.p-chname').textContent=ch.name;
-  p.vid.muted=p.muted;            // reset mute state
+  p.loadEl.classList.add('show');
+  p.botEl.querySelector('.p-chname').textContent=ch.name;
+  p.vid.muted=p.muted;
 
   const url=sett.sproxy?sett.sproxy+encodeURIComponent(ch.url):ch.url;
-
-  // guard: ignore if panel was reassigned while we were setting up
   const stale=()=>p.gen!==gen;
-
-  const ok=()=>{
-    if(stale())return;
-    p.loadEl.classList.remove('show');
-    p.vid.play().catch(()=>{});
-  };
-
+  const ok=()=>{if(stale())return;p.loadEl.classList.remove('show');p.vid.play().catch(()=>{})};
   const showErr=(msg)=>{
-    if(stale())return;
-    p.loadEl.classList.remove('show');p.errEl.classList.add('show');
+    if(stale())return;p.loadEl.classList.remove('show');p.errEl.classList.add('show');
     const sp=p.errEl.querySelector('span');if(sp)sp.textContent='⚠ '+msg;
-    const ud=document.getElementById('perr'+pi);if(ud)ud.textContent=url.slice(0,80)+(url.length>80?'…':'');
+    const ud=document.getElementById('perr'+pi);if(ud)ud.textContent=url.slice(0,70)+(url.length>70?'…':'');
   };
-
   const tryNative=()=>{
     if(stale())return;
     p.vid.src=url;
@@ -725,16 +786,11 @@ function _doAssign(pi,ci){
   if(Hls.isSupported()){
     const cfg=hlsCfg();
     if(sett.referer||sett.ua)cfg.xhrSetup=xhr=>{
-      try{
-        if(sett.referer)xhr.setRequestHeader('Referer',sett.referer);
-        if(sett.ua)xhr.setRequestHeader('User-Agent',sett.ua);
-      }catch{}
+      try{if(sett.referer)xhr.setRequestHeader('Referer',sett.referer);if(sett.ua)xhr.setRequestHeader('User-Agent',sett.ua)}catch{}
     };
     const hls=new Hls(cfg);
-    if(stale()){hls.destroy();return}  // panel already moved on
-    p.hls=hls;
-    hls.loadSource(url);
-    hls.attachMedia(p.vid);
+    if(stale()){hls.destroy();return}
+    p.hls=hls;hls.loadSource(url);hls.attachMedia(p.vid);
     hls.on(Hls.Events.MANIFEST_PARSED,()=>{if(!stale())ok()});
     hls.on(Hls.Events.ERROR,(_,d)=>{
       if(!d.fatal)return;
@@ -745,58 +801,72 @@ function _doAssign(pi,ci){
       else tryNative();
     });
   } else if(p.vid.canPlayType('application/vnd.apple.mpegurl')){
-    if(stale())return;
-    p.vid.src=url;
+    if(stale())return;p.vid.src=url;
     p.vid.addEventListener('canplay',()=>{if(!stale())ok()},{once:true});
     p.vid.addEventListener('error',()=>{if(!stale())showErr('שגיאת טעינה')},{once:true});
-  } else {
-    tryNative();
-  }
+  } else{tryNative()}
+
+  saveLastChannels();
 }
 
 function clearAll(){
-  panels.forEach((_,i)=>clearPanel(i));
-  channels=[];filtered=[];
+  panels.forEach((_,i)=>clearPanel(i));channels=[];filtered=[];
   document.getElementById('sbCount').textContent='0 / 0';
   document.getElementById('clearBtn').style.display='none';
   document.getElementById('catPanel').innerHTML='';
   document.getElementById('chSpacer').style.height='200px';
   document.getElementById('chInner').innerHTML=`<div class="list-empty"><div class="le-icon">📡</div><div class="le-txt">אין פלייליסט</div></div>`;
-  setStatus('ממתין לפלייליסט',false);
+  sv('sg_last',null);setStatus('ממתין',false);
 }
 
-// ════════════════════════════════
-// LAYOUT
-// ════════════════════════════════
+// ════════ LAYOUT ════════
 document.getElementById('layBtns').querySelectorAll('.lay-btn').forEach(b=>{
   b.onclick=()=>{document.getElementById('layBtns').querySelectorAll('.lay-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');buildPanels(parseInt(b.dataset.l))}
 });
 
+// ════════ SIDEBAR ════════
 let sbOn=true;
-function toggleSidebar(){sbOn=!sbOn;document.getElementById('sidebar').classList.toggle('hidden',!sbOn)}
+function toggleSidebar(){sbOn=!sbOn;document.getElementById('sidebar').classList.toggle('hidden',!sbOn);document.getElementById('sbOverlay').classList.toggle('show',sbOn&&window.innerWidth<=640)}
+function closeSidebar(){sbOn=false;document.getElementById('sidebar').classList.add('hidden');document.getElementById('sbOverlay').classList.remove('show')}
 
-// ════════════════════════════════
-// SETTINGS
-// ════════════════════════════════
+// ════════ SETTINGS ════════
 function openSettings(){
+  const saved=ss('sg_url');if(saved)document.getElementById('set-url').value=saved;
+  document.getElementById('set-sp').value=sett.sproxy;
   document.getElementById('set-ref').value=sett.referer;
   document.getElementById('set-ua').value=sett.ua;
-  document.getElementById('set-sp').value=sett.sproxy;
   document.getElementById('set-ll').checked=sett.lowlat;
   document.getElementById('set-wk').checked=sett.worker;
   document.getElementById('settingsModal').classList.add('show');
 }
 function closeSettings(){document.getElementById('settingsModal').classList.remove('show')}
 function saveSettings(){
-  sett={referer:document.getElementById('set-ref').value.trim(),ua:document.getElementById('set-ua').value.trim(),sproxy:document.getElementById('set-sp').value.trim(),lowlat:document.getElementById('set-ll').checked,worker:document.getElementById('set-wk').checked};
-  sv('sg_sett',sett);closeSettings();
+  sett={sproxy:document.getElementById('set-sp').value.trim(),referer:document.getElementById('set-ref').value.trim(),ua:document.getElementById('set-ua').value.trim(),lowlat:document.getElementById('set-ll').checked,worker:document.getElementById('set-wk').checked};
+  sv('sg_sett',sett);
+  const url=document.getElementById('set-url').value.trim();if(url)sv('sg_url',url);
+  closeSettings();
   panels.forEach((_,i)=>{const p=panels[i];if(p.chIdx>=0){const c=p.chIdx;clearPanel(i);assign(i,c)}});
   setStatus('הגדרות נשמרו',true);
 }
 
-// ════════════════════════════════
-// INFO MODAL
-// ════════════════════════════════
+// ════════ HTTPS PROXY BANNER ════════
+function checkHttps(){
+  if(location.protocol!=='https:')return;
+  const saved=ss('sg_sett');
+  if(saved?.sproxy){sett.sproxy=saved.sproxy;return}
+  document.getElementById('httpsBanner').classList.add('show');
+  const prev=ss('sg_hbproxy');if(prev)document.getElementById('hbInp').value=prev;
+}
+function applyProxy(){
+  const val=document.getElementById('hbInp').value.trim();if(!val)return;
+  sett.sproxy=val;sv('sg_sett',sett);sv('sg_hbproxy',val);
+  document.getElementById('set-sp').value=val;
+  document.getElementById('httpsBanner').classList.remove('show');
+  setStatus('Proxy מוגדר',true);
+  panels.forEach((_,i)=>{const p=panels[i];if(p.chIdx>=0){const c=p.chIdx;clearPanel(i);assign(i,c)}});
+}
+
+// ════════ INFO MODAL ════════
 function openInfo(ci){
   const ch=channels[ci];if(!ch)return;
   document.getElementById('infoRows').innerHTML=[['שם',ch.name],['קטגוריה',ch.group],['URL',ch.url]]
@@ -805,14 +875,10 @@ function openInfo(ci){
 }
 function closeInfo(){document.getElementById('infoModal').classList.remove('show')}
 
-// ════════════════════════════════
-// XTREAM CODES
-// ════════════════════════════════
+// ════════ XTREAM ════════
 function openXtream(){
-  const saved=ss('sg_xc');
-  if(saved){document.getElementById('xc-srv').value=saved.server||'';document.getElementById('xc-usr').value=saved.user||'';document.getElementById('xc-pwd').value=saved.pass||''}
-  document.getElementById('xcSt').textContent='';
-  document.getElementById('xcBtn').disabled=false;
+  const s=ss('sg_xc');if(s){document.getElementById('xc-srv').value=s.server||'';document.getElementById('xc-usr').value=s.user||'';document.getElementById('xc-pwd').value=s.pass||''}
+  document.getElementById('xcSt').textContent='';document.getElementById('xcBtn').disabled=false;
   document.getElementById('xtreamModal').classList.add('show');
 }
 function closeXtream(){document.getElementById('xtreamModal').classList.remove('show')}
@@ -820,101 +886,59 @@ function xcSt(m,c){const el=document.getElementById('xcSt');el.textContent=m;el.
 
 async function connectXtream(){
   let srv=document.getElementById('xc-srv').value.trim().replace(/\/+$/,'');
-  const usr=document.getElementById('xc-usr').value.trim();
-  const pwd=document.getElementById('xc-pwd').value.trim();
+  const usr=document.getElementById('xc-usr').value.trim(),pwd=document.getElementById('xc-pwd').value.trim();
   if(!srv||!usr||!pwd){xcSt('⚠ מלא את כל השדות','var(--red)');return}
   if(!/^https?:\/\//i.test(srv))srv='http://'+srv;
   sv('sg_xc',{server:srv,user:usr,pass:pwd});
   const fmt=document.querySelector('input[name="xfmt"]:checked').value;
-  const wL=document.getElementById('xc-live').checked;
-  const wV=document.getElementById('xc-vod').checked;
-  const wS=document.getElementById('xc-ser').checked;
-  document.getElementById('xcBtn').disabled=true;
-  xcSt('🔄 מאמת...');
+  document.getElementById('xcBtn').disabled=true;xcSt('🔄 מאמת...');
   try{
     const auth=await pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}`,true);
-    if(!auth||auth.user_info?.auth===0){xcSt('⚠ שם משתמש או סיסמה שגויים','var(--red)');document.getElementById('xcBtn').disabled=false;return}
+    if(!auth||auth.user_info?.auth===0){xcSt('⚠ אימות נכשל','var(--red)');document.getElementById('xcBtn').disabled=false;return}
     const exp=auth.user_info?.exp_date?new Date(parseInt(auth.user_info.exp_date)*1000).toLocaleDateString('he-IL'):'–';
-    xcSt(`✓ מחובר | פג: ${exp} | ${auth.user_info?.active_cons||0}/${auth.user_info?.max_connections||'?'} חיבורים`,'var(--green)');
+    xcSt(`✓ מחובר | פג: ${exp} | ${auth.user_info?.active_cons||0}/${auth.user_info?.max_connections||'?'}`,'var(--green)');
     const all=[];
-
-    if(wL){
-      xcSt('📺 טוען ערוצים חיים...');
-      const [cats,strm]=await Promise.all([
-        pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_categories`,true),
-        pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`,true)
-      ]);
+    if(document.getElementById('xc-live').checked){
+      xcSt('📺 ערוצים חיים...');
+      const [cats,strm]=await Promise.all([pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_categories`,true),pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`,true)]);
       const cm={};if(Array.isArray(cats))cats.forEach(c=>{cm[c.category_id]=c.category_name});
       if(Array.isArray(strm))strm.forEach(s=>all.push({name:s.name||'ערוץ',logo:s.stream_icon||null,group:cm[s.category_id]||'Live',url:`${srv}/live/${usr}/${pwd}/${s.stream_id}.${fmt}`}));
     }
-    if(wV){
-      xcSt('🎬 טוען VOD...');
-      const [cats,vods]=await Promise.all([
-        pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_vod_categories`,true),
-        pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_vod_streams`,true)
-      ]);
+    if(document.getElementById('xc-vod').checked){
+      xcSt('🎬 VOD...');
+      const [cats,vods]=await Promise.all([pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_vod_categories`,true),pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_vod_streams`,true)]);
       const cm={};if(Array.isArray(cats))cats.forEach(c=>{cm[c.category_id]=c.category_name});
       if(Array.isArray(vods))vods.forEach(v=>all.push({name:v.name||'סרט',logo:v.stream_icon||null,group:'🎬 '+(cm[v.category_id]||'VOD'),url:`${srv}/movie/${usr}/${pwd}/${v.stream_id}.${v.container_extension||'mp4'}`}));
     }
-    if(wS){
-      xcSt('📂 טוען סדרות...');
-      const [cats,ser]=await Promise.all([
-        pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_series_categories`,true),
-        pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_series`,true)
-      ]);
+    if(document.getElementById('xc-ser').checked){
+      xcSt('📂 סדרות...');
+      const [cats,ser]=await Promise.all([pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_series_categories`,true),pfetch(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_series`,true)]);
       const cm={};if(Array.isArray(cats))cats.forEach(c=>{cm[c.category_id]=c.category_name});
       if(Array.isArray(ser))ser.forEach(s=>all.push({name:s.name||'סדרה',logo:s.cover||null,group:'📂 '+(cm[s.category_id]||'Series'),url:`${srv}/series/${usr}/${pwd}/${s.series_id}`}));
     }
     if(!all.length){xcSt('⚠ לא נמצאו פריטים','var(--red)');document.getElementById('xcBtn').disabled=false;return}
-    xcSt(`✓ ${all.length.toLocaleString()} פריטים נטענו`,'var(--green)');
-    setTimeout(()=>{closeXtream();channels=all;loadChannels(all)},600);
+    xcSt(`✓ ${all.length.toLocaleString()} פריטים`,'var(--green)');
+    setTimeout(()=>{closeXtream();channels=all;loadChannels(all)},500);
   }catch(e){xcSt('⚠ '+e.message,'var(--red)');document.getElementById('xcBtn').disabled=false}
 }
 
-// ════════════════════════════════
-// HELPERS
-// ════════════════════════════════
+// ════════ HELPERS ════════
 function setStatus(t,live){document.getElementById('stxt').textContent=t;document.getElementById('sdot').className='sdot'+(live?' live':'')}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeInfo();closeSettings();closeXtream()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeInfo();closeSettings();closeXtream();closePicker()}});
 
-// ════════════════════════════════
-// HTTPS DETECTION + PROXY BANNER
-// ════════════════════════════════
-function checkHttps(){
-  if(location.protocol!=='https:')return;
-  // On HTTPS without a proxy configured — show banner
-  const saved=ss('sg_sett');
-  if(saved?.sproxy)return; // already configured
-  const banner=document.getElementById('httpsBanner');
-  banner.classList.add('show');
-  // Pre-fill if previously dismissed with a value
-  const prev=ss('sg_hbproxy');
-  if(prev)document.getElementById('hbProxyInp').value=prev;
-}
-
-function applyHbProxy(){
-  const val=document.getElementById('hbProxyInp').value.trim();
-  if(!val)return;
-  sett.sproxy=val;
-  sv('sg_sett',sett);
-  sv('sg_hbproxy',val);
-  document.getElementById('httpsBanner').classList.remove('show');
-  // Also update settings modal
-  document.getElementById('set-sp').value=val;
-  setStatus('Proxy מוגדר — ניסה לטעון מחדש',true);
-  panels.forEach((_,i)=>{const p=panels[i];if(p.chIdx>=0){const c=p.chIdx;clearPanel(i);assign(i,c)}});
-}
-
-// ════════════════════════════════
-// INIT
-// ════════════════════════════════
+// ════════ INIT ════════
 (()=>{
   const s=ss('sg_sett');if(s)sett={...sett,...s};
   buildPanels(1);
   document.getElementById('chSpacer').style.height='200px';
-  document.getElementById('chInner').innerHTML=`<div class="list-empty"><div class="le-icon">📡</div><div class="le-txt">טען פלייליסט M3U או התחבר עם Xtream</div></div>`;
+  document.getElementById('chInner').innerHTML=`<div class="list-empty"><div class="le-icon">📡</div><div class="le-txt">טען M3U או התחבר Xtream</div></div>`;
   checkHttps();
+  // Auto-load saved URL
+  const savedUrl=ss('sg_url');
+  if(savedUrl){document.getElementById('urlInp').value=savedUrl;loadFromUrl(savedUrl)}
+  // Mobile: sidebar closed by default
+  if(window.innerWidth<=640){document.getElementById('sidebar').classList.add('hidden');sbOn=false}
 })();
 </script>
 </body>
