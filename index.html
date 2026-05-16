@@ -99,9 +99,21 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
 .vpanel.active-stream .live-badge{display:inline}
 .sel-badge{font-family:var(--fi);font-size:9px;font-weight:700;background:var(--accent);color:#000;padding:2px 4px;border-radius:2px;display:none}
 .vpanel.sel .sel-badge{display:inline}
-/* Pick channel button — always visible */
-.p-pick{background:rgba(232,160,32,.25);border:1px solid rgba(232,160,32,.5);border-radius:4px;color:var(--accent);font-size:14px;cursor:pointer;padding:2px 6px;line-height:1;transition:background .15s}
-.p-pick:hover,.p-pick:active{background:rgba(232,160,32,.45)}
+/* Pick channel button — absolute center top */
+.p-pick{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(10,16,26,.8);border:1px solid rgba(232,160,32,.5);
+  border-radius:20px;color:var(--accent);cursor:pointer;z-index:4;
+  font-family:var(--fi);font-size:14px;font-weight:600;letter-spacing:.5px;
+  padding:9px 20px;white-space:nowrap;backdrop-filter:blur(6px);transition:all .15s;
+}
+.p-pick:hover,.p-pick:active{background:var(--accent-bg);border-color:var(--accent)}
+/* When stream is active → shrink to top-center */
+.vpanel.active-stream .p-pick{
+  top:8px;left:50%;transform:translateX(-50%);
+  padding:3px 12px;font-size:11px;
+  background:rgba(0,0,0,.5);border-color:rgba(232,160,32,.35);
+}
 
 /* Panel bottom bar */
 .p-bottom{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:14px 6px 5px;display:flex;align-items:flex-end;justify-content:space-between;opacity:0;transition:opacity .2s;z-index:2}
@@ -233,8 +245,10 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
 /* ══ MOBILE ══ */
 @media(max-width:640px){
   :root{--topH:44px;--sb:100vw}
+  html,body{height:100dvh} /* dynamic viewport - fixes iOS Safari address bar */
 
-  .url-wrap{display:none} /* hide URL bar, accessible via settings */
+  .url-wrap{display:none}
+  .vd{display:none}
 
   #sidebar{
     position:fixed;top:var(--topH);right:0;bottom:0;
@@ -244,19 +258,24 @@ body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--tex
     box-shadow:-4px 0 20px rgba(0,0,0,.5);
   }
   #sidebar.hidden{transform:translateX(100%)}
-
-  /* Sidebar overlay backdrop */
   #sbOverlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;display:none}
   #sbOverlay.show{display:block}
 
   .lay-btn[data-l="3"]{display:none}
   .lay-btn[data-l="6"]{display:none}
 
-  .p-bottom{opacity:1!important} /* always show on touch */
+  /* Bottom controls always visible on touch */
+  .p-bottom{opacity:1!important}
   .p-btn{width:32px;height:32px;font-size:14px}
-  .p-pick{font-size:16px;padding:3px 7px}
+
+  /* Picker button always clearly visible on small screens */
+  .vpanel.active-stream .p-pick{font-size:12px;padding:4px 12px}
 
   .logo span{display:none}
+
+  /* Safe area (iPhone notch/home bar) */
+  #topbar{padding-top:max(0px,env(safe-area-inset-top));height:calc(var(--topH) + max(0px,env(safe-area-inset-top)))}
+  #main{padding-bottom:env(safe-area-inset-bottom)}
 }
 
 #scanlines{position:fixed;inset:0;pointer-events:none;z-index:999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px)}
@@ -669,11 +688,20 @@ function hlsCfg(){
     startLevel:-1,capLevelToPlayerSize:true};
 }
 
-function buildPanels(n){
+function buildPanels(n,restoreExisting){
   const g=document.getElementById('vgrid');
+  // Save existing channel indices before destroying
+  const existingCi=panels.map(p=>p.chIdx);
   panels.forEach(p=>destroyHls(p));panels=[];g.innerHTML='';g.className='l'+n;
   for(let i=0;i<n;i++){const p=mkPanel(i);g.appendChild(p.el);panels.push(p)}
   selPanel(0);
+  sv('sg_layout',n);
+  // Update layout button UI
+  document.getElementById('layBtns').querySelectorAll('.lay-btn').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.l)===n));
+  // Restore existing content if switching layouts
+  if(restoreExisting){
+    existingCi.forEach((ci,i)=>{if(i<panels.length&&ci>=0&&channels[ci])assign(i,ci)});
+  }
 }
 
 function mkPanel(idx){
@@ -683,11 +711,14 @@ function mkPanel(idx){
   const emp=document.createElement('div');emp.className='p-empty';
   emp.innerHTML=`<div class="p-num">${idx+1}</div><div class="p-hint">בחר ערוץ</div>`;el.appendChild(emp);
 
-  // Top bar (always visible)
+  // Top bar — badges only
   const top=document.createElement('div');top.className='p-top';
-  top.innerHTML=`<span class="live-badge">LIVE</span><span class="sel-badge">פעיל</span>
-    <button class="p-pick" title="בחר ערוץ">📺</button>`;
+  top.innerHTML=`<span class="live-badge">LIVE</span><span class="sel-badge">פעיל</span>`;
   el.appendChild(top);
+
+  // Pick button — centered absolute
+  const pick=document.createElement('button');pick.className='p-pick';pick.textContent='📺 בחר ערוץ';
+  el.appendChild(pick);
 
   // Bottom controls
   const bot=document.createElement('div');bot.className='p-bottom';
@@ -710,7 +741,7 @@ function mkPanel(idx){
   el.addEventListener('dragleave',()=>el.classList.remove('dragover'));
   el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('dragover');if(dragIdx!==null)assign(idx,dragIdx)});
 
-  top.querySelector('.p-pick').onclick=e=>{e.stopPropagation();openPicker(idx,e.currentTarget)};
+  pick.onclick=e=>{e.stopPropagation();openPicker(idx,pick)};
 
   bot.querySelector('.mb').onclick=ev=>{
     ev.stopPropagation();p.muted=!p.muted;vid.muted=p.muted;
@@ -821,7 +852,7 @@ function clearAll(){
 
 // ════════ LAYOUT ════════
 document.getElementById('layBtns').querySelectorAll('.lay-btn').forEach(b=>{
-  b.onclick=()=>{document.getElementById('layBtns').querySelectorAll('.lay-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');buildPanels(parseInt(b.dataset.l))}
+  b.onclick=()=>buildPanels(parseInt(b.dataset.l),true);
 });
 
 // ════════ SIDEBAR ════════
@@ -930,11 +961,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeInfo();closeSe
 // ════════ INIT ════════
 (()=>{
   const s=ss('sg_sett');if(s)sett={...sett,...s};
-  buildPanels(1);
+  // Restore saved layout (default 1)
+  const savedLayout=ss('sg_layout')||1;
+  buildPanels(savedLayout,false);
   document.getElementById('chSpacer').style.height='200px';
   document.getElementById('chInner').innerHTML=`<div class="list-empty"><div class="le-icon">📡</div><div class="le-txt">טען M3U או התחבר Xtream</div></div>`;
   checkHttps();
-  // Auto-load saved URL
+  // Auto-load saved URL → channels → then restore last panels
   const savedUrl=ss('sg_url');
   if(savedUrl){document.getElementById('urlInp').value=savedUrl;loadFromUrl(savedUrl)}
   // Mobile: sidebar closed by default
