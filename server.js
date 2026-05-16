@@ -9,7 +9,14 @@ function fetchTarget(target,res,redirectCount=0){
   const opts={
     hostname:parsed.hostname,port:parsed.port||( parsed.protocol==='https:'?443:80),
     path:parsed.path||'/',method:'GET',
-    headers:{'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36','Accept':'*/*'}
+    headers:{
+      'User-Agent':'VLC/3.0.18 LibVLC/3.0.18',
+      'Accept':'*/*',
+      'Accept-Language':'he-IL,he;q=0.9',
+      'Connection':'keep-alive',
+      'Referer':'http://'+parsed.hostname+'/',
+      'Origin':'http://'+parsed.hostname
+    }
   };
   const req=proto.request(opts,r=>{
     // Follow redirects
